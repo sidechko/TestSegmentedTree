@@ -3,6 +3,7 @@ package ru.teamstarshine.two;
 import ru.teamstarshine.Area;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class STArea {
@@ -71,6 +72,10 @@ public class STArea {
     }
 
     public void appendArea(Area area) {
+        Area[] newData = new Area[this.data.length+1];
+        System.arraycopy(this.data,0,newData,0,this.data.length);
+        newData[this.data.length] = area;
+        this.data = newData;
         appendData(new STAbstractNodeArea(area));
     }
 
@@ -94,13 +99,71 @@ public class STArea {
         }
     }
 
-    public static Object selectOneOfArgs(Object o1, Object o2) {
-        if (o1 == null)
-            return o2;
-        return o1;
+    private STNodeArea findMostRightAbstParent(){
+        STNodeArea parent = coreNode;
+        if(parent == null)
+            return null;
+        while (parent.right instanceof STNodeArea){
+            parent = (STNodeArea) parent.right;
+        }
+        return parent;
     }
 
-    // REMOVE
+    private boolean removeNodeWithThisValue(STAbstractNodeArea node, Area value, STNodeArea parent) {
+        if (!(node instanceof STNodeArea)){
+            boolean isEql = node.value.equals(value);
+            if(parent != null){
+                if(parent.left == node)
+                    parent.swapChildPos();
+                parent.right = null;
+            }
+            moveNodeRightChildYoNodeRightWay(findMostRightAbstParent(), parent);
+
+            return isEql;
+        }
+        if (!node.value.areaIsInside(value))
+            return false;
+        if (!removeNodeWithThisValue(((STNodeArea) node).right, value, (STNodeArea) node) &&
+            !removeNodeWithThisValue(((STNodeArea) node).left, value, (STNodeArea) node))
+            return false;
+        ((STNodeArea) node).updateValueVoid();
+
+        return true;
+    }
+
+    private void removeMostRightWayIfNull(){
+        STNodeArea node = coreNode;
+        List<STNodeArea> nodeToKill = new ArrayList<>();
+        while (node.right instanceof STNodeArea){
+            node = (STNodeArea) node.right;
+            nodeToKill.add(node);
+        }
+        STNodeArea[] nods = nodeToKill.toArray(new STNodeArea[0]);
+        for (int i = nods.length-1; i > 0; i++) {
+            if(!nods[i].childIsNull())
+                break;
+            nods[i-1].setRight(null);
+        }
+
+    }
+
+    private void moveNodeRightChildYoNodeRightWay(STNodeArea moveNodeParent, STNodeArea stepFather) {
+        if(moveNodeParent == null)
+            return;
+        if(stepFather == null)
+            return;
+        stepFather.setRight(moveNodeParent.right);
+        moveNodeParent.right = null;
+    }
+
+    // УДАЛЕНИЕ
+    public void removeValueFromTree(Area value){
+        removeNodeWithThisValue(coreNode,value,null);
+        removeMostRightWayIfNull();
+    }
+
+    // SORT
+
 
 //    Мыслил как сделать добавление
 

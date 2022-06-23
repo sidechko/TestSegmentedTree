@@ -37,6 +37,12 @@ public class STNodeArea extends STAbstractNodeArea{
         this.value = stna.value;
     }
 
+    public void swapChildPos(){
+        STAbstractNodeArea tmp = this.left;
+        this.left = this.right;
+        this.right = tmp;
+    }
+
     public boolean childIsNull(){
         return this.left == null && this.right == null;
     }
