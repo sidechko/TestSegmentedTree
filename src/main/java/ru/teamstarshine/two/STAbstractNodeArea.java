@@ -3,7 +3,7 @@ package ru.teamstarshine.two;
 import ru.teamstarshine.Area;
 
 public class STAbstractNodeArea {
-    Area value;
+    public Area value;
 
     public STAbstractNodeArea(Area value) {
         this.value = value;
@@ -11,5 +11,10 @@ public class STAbstractNodeArea {
 
     public STAbstractNodeArea copy(){
         return new STAbstractNodeArea(this.value);
+    }
+
+    @Override
+    public String toString() {
+        return "An";
     }
 }

@@ -3,7 +3,6 @@ package ru.teamstarshine.two;
 import ru.teamstarshine.Area;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class STArea {
@@ -121,7 +120,7 @@ public class STArea {
 
             return isEql;
         }
-        if (!node.value.areaIsInside(value))
+        if (!node.value.isInside(value))
             return false;
         if (!removeNodeWithThisValue(((STNodeArea) node).right, value, (STNodeArea) node) &&
             !removeNodeWithThisValue(((STNodeArea) node).left, value, (STNodeArea) node))

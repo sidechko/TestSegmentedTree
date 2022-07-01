@@ -22,6 +22,14 @@ public class STNodeArea extends STAbstractNodeArea{
         return this;
     }
 
+    public void fullTreeUnderUpdate(){
+        if(left instanceof STNodeArea)
+            ((STNodeArea) left).fullTreeUnderUpdate();
+        if(right instanceof STNodeArea)
+            ((STNodeArea) right).fullTreeUnderUpdate();
+        this.updateValueVoid();
+    }
+
     public void updateValueVoid(){
         this.value = Area.sum(left.value,right.value);
     }

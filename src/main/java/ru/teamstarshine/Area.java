@@ -3,7 +3,6 @@ package ru.teamstarshine;
 import com.sun.istack.internal.Nullable;
 
 import java.util.Arrays;
-import java.util.Random;
 
 public class Area {
     int[] pos1;
@@ -23,11 +22,15 @@ public class Area {
                 Math.max(a1.pos2[2], a2.pos2[2]));
     }
 
+    public Area(int x, int y, int z){
+        this(x,y,z,x,y,z);
+    }
+
     public boolean isInside(int x, int y, int z) {
         return pos1[0] <= x && pos2[0] >= x && pos1[1] <= y && pos2[1] >= y && pos1[2] <= z && pos2[2] >= z;
     }
 
-    public boolean areaIsInside(Area area){
+    public boolean isInside(Area area){
         return this.isInside(area.pos1[0],area.pos1[1],area.pos1[2]) && this.isInside(area.pos2[0],area.pos2[1],area.pos2[2]);
     }
 
