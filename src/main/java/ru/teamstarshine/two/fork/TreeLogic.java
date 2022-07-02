@@ -5,7 +5,7 @@ import ru.teamstarshine.UtilMethods;
 import ru.teamstarshine.two.STAbstractNodeArea;
 
 public class TreeLogic {
-    STWayNode coreNode;
+    private STWayNode coreNode;
 
     public TreeLogic(Area[] list) {
         STAbstractNodeArea[] lastLayer = convertToBottomLayer(list);
@@ -37,6 +37,9 @@ public class TreeLogic {
     public STAreaNodeInfo findNodeOfArea(Area area) {
         return findAreaByAreaStatsAtNode(area, coreNode, true);
     }
+    public STAreaNodeInfo findNodeOfArea(Area area, boolean needCheck) {
+        return findAreaByAreaStatsAtNode(area, coreNode, needCheck);
+    }
 
     //REMOVE
     public boolean removeAbstractNode(int x, int y, int z) {
@@ -44,16 +47,19 @@ public class TreeLogic {
     }
 
     public boolean removeAbstractNode(Area area) {
-        STAreaNodeInfo foundNode = findNodeOfArea(area);
+        STAreaNodeInfo foundNode = findNodeOfArea(area, false);
         if (foundNode == null)
             return false;
 
         STWayNode parent = foundNode.getParent();
         if (!foundNode.isSide())
             parent.swapChild();
-        parent.setRight(null);
+        parent.setRightWithUpdate(null);
 
         STWayNode mostRightWayNode = getMostRight();
+        if(mostRightWayNode == parent)
+            return true;
+
         if(mostRightWayNode.getRight() == null)
             mostRightWayNode.swapChild();
         parent.setRightWithUpdate(mostRightWayNode.getRight());
@@ -74,26 +80,35 @@ public class TreeLogic {
         if (node.value.isInside(area)) {
             STAbstractNodeArea right = node.getRight();
             STAbstractNodeArea left = node.getLeft();
+            STAreaNodeInfo leftInfo = null;
+            STAreaNodeInfo rightInfo = null;
+            first:
             if (!(right instanceof STWayNode)) {
                 if (right.value.isInside(area)) {
-                    if (needCheckEquals)
-                        return area.equals(right.value) ? new STAreaNodeInfo(node, true) : null;
-                    return new STAreaNodeInfo(node, true);
+                    if (needCheckEquals){
+                        if(area.equals(right.value))
+                            rightInfo = new STAreaNodeInfo(node, true);
+                        break first;
+                    }
+                    rightInfo = new STAreaNodeInfo(node, true);
                 }
-                return null;
+            }else {
+                rightInfo = findAreaByAreaStatsAtNode(area, (STWayNode) right, needCheckEquals);
             }
+            second:
             if (!(left instanceof STWayNode)) {
                 if (left.value.isInside(area)) {
-                    if (needCheckEquals)
-                        return area.equals(left.value) ? new STAreaNodeInfo(node, false) : null;
-                    return new STAreaNodeInfo(node, false);
+                    if (needCheckEquals){
+                        if(area.equals(left.value))
+                            leftInfo = new STAreaNodeInfo(node, false);
+                        break second;
+                    }
+                     leftInfo = new STAreaNodeInfo(node, false);
                 }
-                return null;
+            }else{
+                leftInfo = findAreaByAreaStatsAtNode(area, (STWayNode) left, needCheckEquals);
             }
-            return UtilMethods.selectOneOfArgs(
-                    findAreaByAreaStatsAtNode(area, (STWayNode) right, needCheckEquals),
-                    findAreaByAreaStatsAtNode(area, (STWayNode) left, needCheckEquals)
-            );
+            return UtilMethods.selectOneOfArgs(leftInfo, rightInfo);
         }
         return null;
     }
@@ -118,4 +133,7 @@ public class TreeLogic {
         return toRet;
     }
 
+    public String getTreeOfString(){
+        return coreNode.toString();
+    }
 }

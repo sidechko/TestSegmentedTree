@@ -1,7 +1,5 @@
 package ru.teamstarshine;
 
-import com.sun.istack.internal.Nullable;
-
 import java.util.Arrays;
 
 public class Area {
@@ -42,7 +40,7 @@ public class Area {
         return Arrays.equals(pos1, area.pos1) && Arrays.equals(pos2, area.pos2);
     }
 
-    public static Area sum(@Nullable Area a, @Nullable Area b) {
+    public static Area sum(Area a, Area b) {
         return createNewByAreas(a,b);
     }
 
@@ -54,5 +52,13 @@ public class Area {
         else if( b == null)
             return a;
         else return new Area(a,b);
+    }
+
+    @Override
+    public String toString() {
+        return "Area{" +
+                "pos1=" + Arrays.toString(pos1) +
+                ", pos2=" + Arrays.toString(pos2) +
+                '}';
     }
 }

@@ -155,7 +155,7 @@ public class STArea {
         moveNodeParent.right = null;
     }
 
-    // УДАЛЕНИЕ
+    // REMOVE
     public void removeValueFromTree(Area value){
         removeNodeWithThisValue(coreNode,value,null);
         removeMostRightWayIfNull();
@@ -164,7 +164,7 @@ public class STArea {
     // SORT
 
 
-//    Мыслил как сделать добавление
+//    MindGames
 
 //    public void appendNewNode(STAbstractNodeArea node){
 //        if(rightIsFullFromCore()){

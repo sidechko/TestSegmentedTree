@@ -4,7 +4,11 @@ import ru.teamstarshine.Area;
 import ru.teamstarshine.UtilMethods;
 import ru.teamstarshine.two.STAbstractNodeArea;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class STWayNode extends STAbstractNodeArea {
     private static final Random RfPIDtL = new Random();
@@ -36,18 +40,18 @@ public class STWayNode extends STAbstractNodeArea {
     }
 
     //SETTERS TIER 2
-    
-    public void leaveFromHome(){
+
+    public void leaveFromHome() {
         abaddon();
         listenChildAboutLeave(this);
         parent = null;
     }
-    
-    private void listenChildAboutLeave(STAbstractNodeArea child){
-        if(child == left)
+
+    private void listenChildAboutLeave(STAbstractNodeArea child) {
+        if (child == left)
             swapChild();
         right = null;
-        if(left == null)
+        if (left == null)
             leaveFromHome();
     }
 
@@ -58,7 +62,7 @@ public class STWayNode extends STAbstractNodeArea {
     }
 
     public void setRightWithUpdate(STAbstractNodeArea right) {
-        setLeft(right);
+        setRight(right);
         setParentOf(right);
         updateAllWayTop();
     }
@@ -78,29 +82,42 @@ public class STWayNode extends STAbstractNodeArea {
     }
 
     private void updateAllWayTop() {
-        if(parent == null)
+        this.updateThisValue();
+        if (parent == null)
             return;
         parent.updateThisValue();
         parent.updateAllWayTop();
     }
 
     private void updateThisValue() {
-        value = Area.sum(left.value, right.value);
-        isFull = right !=null && left != null;
-        if(right instanceof STWayNode)
+        value = sumInside();
+        isFull = right != null && left != null;
+        if (right instanceof STWayNode)
             isFull &= ((STWayNode) right).isFull;
-        if(left instanceof STWayNode)
+        if (left instanceof STWayNode)
             isFull &= ((STWayNode) left).isFull;
         mutate = right instanceof STWayNode ^ left instanceof STWayNode;
+        mutate |= right == null || left == null;
         isFull &= !mutate;
     }
 
-    public STWayNode findNotFullChild(){
-        if(isFull)
+    private Area sumInside(){
+        if(left == null && right == null)
             return null;
-        if(mutate)
+        if(left == null)
+            return Area.sum(null, right.value);
+        if(right == null)
+            return Area.sum(left.value, null);
+        return Area.sum(left.value,right.value);
+    }
+
+    public STWayNode findNotFullChild() {
+        if (isFull)
+            return null;
+        if (mutate){
             return this;
-        if(left instanceof STWayNode){
+        }
+        if (left instanceof STWayNode) {
             return UtilMethods.selectOneOfArgs(((STWayNode) left).findNotFullChild(), ((STWayNode) right).findNotFullChild());
         }
         return this;
@@ -153,13 +170,48 @@ public class STWayNode extends STAbstractNodeArea {
         return mutate;
     }
 
-    public boolean isChildless(){
+    public boolean isChildless() {
         return right == null && left == null;
     }
 
     @Override
     public String toString() {
-        int rndRes = RfPIDtL.nextInt(10);
-        return "\nWn"+rndRes+":{\n\t"+"("+rndRes+")"+left.toString()+",\n\t("+rndRes+")"+right.toString()+"\b\b\b\b}";
+        String leftStr = "";
+        String rightStr = "";
+
+        if(left!=null)
+            leftStr = left.toString();
+        if(right!=null)
+            rightStr = right.toString();
+
+        List<String> leftSplit = Arrays.asList(leftStr.split("\n"));
+        List<String> rightSplit =  Arrays.asList(rightStr.split("\n"));
+        List<String> result = new ArrayList<>();
+        int maxSize = 0;
+        for (int i = 0; i < Math.max(leftSplit.size(),rightSplit.size()); i++) {
+            String lPatr = i >= leftSplit.size() ? " " : leftSplit.get(i);
+            String rPatr = i >= rightSplit.size() ? " " : rightSplit.get(i);
+            result.add(lPatr+"  "+rPatr);
+            maxSize = Math.max(result.get(i).length(), maxSize);
+        }
+        int finalMaxSize = maxSize;
+        result = result.stream().map(str->{
+            while (str.length()< finalMaxSize)
+                str+=" ";
+            return str;
+        }).collect(Collectors.toList());
+        StringBuilder toWN = new StringBuilder();
+        for (int i = 0; i < maxSize; i++) {
+            toWN.append(" ");
+        }
+        toWN.append('\n');
+        toWN.replace(maxSize/2-1,maxSize/2+1,"Wn");
+        result.forEach(str->toWN.append(str).append('\n'));
+        toWN.delete(toWN.length()-1,toWN.length());
+        return toWN.toString();
     }
+    // ######wn######
+    // **wn**##**wn**  **wn**
+    // an**an##an**__  __**an
+
 }
