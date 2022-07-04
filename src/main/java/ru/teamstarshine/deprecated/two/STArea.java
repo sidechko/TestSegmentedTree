@@ -1,15 +1,16 @@
-package ru.teamstarshine.two;
+package ru.teamstarshine.deprecated.two;
 
-import ru.teamstarshine.Area;
+import ru.teamstarshine.main.area.DefaultArea;
+import ru.teamstarshine.main.tree.STAbstractNodeArea;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class STArea {
-    Area[] data;
+    DefaultArea[] data;
     STNodeArea coreNode;
 
-    public STArea(Area[] data) {
+    public STArea(DefaultArea[] data) {
         this.data = data.clone();
     }
 
@@ -70,8 +71,8 @@ public class STArea {
         appendNewNoteAtNode(coreNode, data);
     }
 
-    public void appendArea(Area area) {
-        Area[] newData = new Area[this.data.length+1];
+    public void appendArea(DefaultArea area) {
+        DefaultArea[] newData = new DefaultArea[this.data.length+1];
         System.arraycopy(this.data,0,newData,0,this.data.length);
         newData[this.data.length] = area;
         this.data = newData;
@@ -81,13 +82,13 @@ public class STArea {
 
     //QUERY
 
-    public Area[] findAreaWithCordInside(int x, int y, int z) {
-        List<Area> list = new ArrayList<>();
+    public DefaultArea[] findAreaWithCordInside(int x, int y, int z) {
+        List<DefaultArea> list = new ArrayList<>();
         findAreaWithCordInside(coreNode, x, y, z, list);
-        return list.toArray(new Area[list.size()]);
+        return list.toArray(new DefaultArea[list.size()]);
     }
 
-    private void findAreaWithCordInside(STAbstractNodeArea node, int x, int y, int z, List<Area> listToRet) {
+    private void findAreaWithCordInside(STAbstractNodeArea node, int x, int y, int z, List<DefaultArea> listToRet) {
         if (!node.value.isInside(x, y, z))
             return;
         if (node instanceof STNodeArea) {
@@ -108,7 +109,7 @@ public class STArea {
         return parent;
     }
 
-    private boolean removeNodeWithThisValue(STAbstractNodeArea node, Area value, STNodeArea parent) {
+    private boolean removeNodeWithThisValue(STAbstractNodeArea node, DefaultArea value, STNodeArea parent) {
         if (!(node instanceof STNodeArea)){
             boolean isEql = node.value.equals(value);
             if(parent != null){
@@ -156,7 +157,7 @@ public class STArea {
     }
 
     // REMOVE
-    public void removeValueFromTree(Area value){
+    public void removeValueFromTree(DefaultArea value){
         removeNodeWithThisValue(coreNode,value,null);
         removeMostRightWayIfNull();
     }

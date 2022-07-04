@@ -1,8 +1,7 @@
-package ru.teamstarshine.two.fork;
+package ru.teamstarshine.main.tree;
 
-import ru.teamstarshine.Area;
-import ru.teamstarshine.UtilMethods;
-import ru.teamstarshine.two.STAbstractNodeArea;
+import ru.teamstarshine.main.area.DefaultArea;
+import ru.teamstarshine.main.util.UtilMethods;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,10 +39,9 @@ public class STWayNode extends STAbstractNodeArea {
     }
 
     //SETTERS TIER 2
-
     public void leaveFromHome() {
         abaddon();
-        listenChildAboutLeave(this);
+        parent.listenChildAboutLeave(this);
         parent = null;
     }
 
@@ -73,7 +71,7 @@ public class STWayNode extends STAbstractNodeArea {
     }
 
     //UPDATERS
-    private void updateAllWayDown() {
+    protected void updateAllWayDown() {
         if (left instanceof STWayNode)
             ((STWayNode) left).updateAllWayDown();
         if (right instanceof STWayNode)
@@ -101,20 +99,28 @@ public class STWayNode extends STAbstractNodeArea {
         isFull &= !mutate;
     }
 
-    private Area sumInside(){
+    private DefaultArea sumInside(){
         if(left == null && right == null)
             return null;
         if(left == null)
-            return Area.sum(null, right.value);
+            return DefaultArea.sum(null, right.value);
         if(right == null)
-            return Area.sum(left.value, null);
-        return Area.sum(left.value,right.value);
+            return DefaultArea.sum(left.value, null);
+        return DefaultArea.sum(left.value,right.value);
     }
 
     public STWayNode findNotFullChild() {
         if (isFull)
             return null;
         if (mutate){
+            if(left instanceof STWayNode){
+                STWayNode toRet = ((STWayNode) left).findNotFullChild();
+                return toRet == null ? this: toRet;
+            }
+            else if (right instanceof STWayNode) {
+                STWayNode toRet = ((STWayNode) right).findNotFullChild();
+                return toRet == null ? this: toRet;
+            }
             return this;
         }
         if (left instanceof STWayNode) {
@@ -124,7 +130,6 @@ public class STWayNode extends STAbstractNodeArea {
     }
 
     //SETTERS
-
     private void abaddon() {
         left = null;
         right = null;
@@ -174,6 +179,45 @@ public class STWayNode extends STAbstractNodeArea {
         return right == null && left == null;
     }
 
+    public boolean hasAllChild() {
+        return right != null && left != null;
+    }
+
+    public List<DefaultArea> getAllAreas(List<DefaultArea> list){
+        if(left instanceof STWayNode)
+            ((STWayNode) left).getAllAreas(list);
+        else
+            if(left != null)
+                list.add(left.value);
+        if(right instanceof STWayNode)
+            ((STWayNode) right).getAllAreas(list);
+        else
+            if(right != null)
+                list.add(right.value);
+        return list;
+    }
+
+    protected STWayNode getMostRight(){
+        if(right instanceof STWayNode)
+            return ((STWayNode) right).getMostRight();
+        if(right == null)
+            if(left instanceof STWayNode)
+                return ((STWayNode) left).getMostRight();
+        return this;
+    }
+
+    protected List<STAreaNodeInfo> getAllAbstractNodeInfo(List<STAreaNodeInfo> list){
+        if(left instanceof STWayNode)
+            ((STWayNode) left).getAllAbstractNodeInfo(list);
+        else
+            list.add(new STAreaNodeInfo(this,false));
+        if(right instanceof STWayNode)
+            ((STWayNode) right).getAllAbstractNodeInfo(list);
+        else
+            list.add(new STAreaNodeInfo(this, true));
+        return list;
+    }
+
     @Override
     public String toString() {
         String leftStr = "";
@@ -210,8 +254,5 @@ public class STWayNode extends STAbstractNodeArea {
         toWN.delete(toWN.length()-1,toWN.length());
         return toWN.toString();
     }
-    // ######wn######
-    // **wn**##**wn**  **wn**
-    // an**an##an**__  __**an
 
 }

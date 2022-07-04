@@ -1,13 +1,14 @@
-package ru.teamstarshine.two;
+package ru.teamstarshine.deprecated.two;
 
-import ru.teamstarshine.Area;
+import ru.teamstarshine.main.area.DefaultArea;
+import ru.teamstarshine.main.tree.STAbstractNodeArea;
 
-public class STNodeArea extends STAbstractNodeArea{
+public class STNodeArea extends STAbstractNodeArea {
     STAbstractNodeArea left = null;
     STAbstractNodeArea right = null;
 
     public STNodeArea(STAbstractNodeArea left, STAbstractNodeArea right){
-        super(Area.sum(left.value,right.value));
+        super(DefaultArea.sum(left.value,right.value));
         this.left = left;
         this.right = right;
     }
@@ -31,11 +32,11 @@ public class STNodeArea extends STAbstractNodeArea{
     }
 
     public void updateValueVoid(){
-        this.value = Area.sum(left.value,right.value);
+        this.value = DefaultArea.sum(left.value,right.value);
     }
 
     public STNodeArea updateValue(){
-        this.value = Area.sum(left.value,right.value);
+        this.value = DefaultArea.sum(left.value,right.value);
         return this;
     }
 

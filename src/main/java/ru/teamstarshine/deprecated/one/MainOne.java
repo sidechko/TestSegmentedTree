@@ -1,4 +1,4 @@
-package ru.teamstarshine.one;
+package ru.teamstarshine.deprecated.one;
 
 import java.util.ArrayList;
 import java.util.List;

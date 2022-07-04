@@ -1,12 +1,10 @@
-package ru.teamstarshine.two.fork;
-
-import ru.teamstarshine.Area;
+package ru.teamstarshine.main.area;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class UserArea extends Area {
+public class UserArea extends DefaultArea {
     public final String owner;
     public final UUID uuid;
     private final List<String> builders = new ArrayList<>();

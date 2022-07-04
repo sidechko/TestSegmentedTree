@@ -1,27 +1,27 @@
-package ru.teamstarshine.one;
+package ru.teamstarshine.deprecated.one;
 
-import ru.teamstarshine.Area;
+import ru.teamstarshine.main.area.DefaultArea;
 
 import java.util.Arrays;
 
 public class BinarySegmentedTree {
-    private Area[] inputDate;
-    private Area[] segmentValue;
+    private DefaultArea[] inputDate;
+    private DefaultArea[] segmentValue;
 
-    public BinarySegmentedTree(Area... inputDate) {
+    public BinarySegmentedTree(DefaultArea... inputDate) {
         this.inputDate = inputDate.clone();
         fullBuild();
     }
 
-    public void appendDate(Area newDate){
-        Area[] updated = new Area[this.inputDate.length+1];
+    public void appendDate(DefaultArea newDate){
+        DefaultArea[] updated = new DefaultArea[this.inputDate.length+1];
         System.arraycopy(this.inputDate,0,updated,0,this.inputDate.length);
         updated[inputDate.length] = newDate;
         this.inputDate = updated;
         fullBuild();
     }
 
-    public void removeAndRebuild(Area ... areas){
+    public void removeAndRebuild(DefaultArea... areas){
         int[] toRm = new int[areas.length];
         int countOfFind = 0;
         for (int i = 0; i < inputDate.length; i++) {
@@ -33,7 +33,7 @@ public class BinarySegmentedTree {
                 }
             }
         }
-        Area[] afterRemove = new Area[inputDate.length-countOfFind];
+        DefaultArea[] afterRemove = new DefaultArea[inputDate.length-countOfFind];
         int mover = 0;
 
         for (int i = 0; i < inputDate.length; i++) {
@@ -50,7 +50,7 @@ public class BinarySegmentedTree {
         fullBuild();
     }
     private void fullBuild(){
-        this.segmentValue = new Area[inputDate.length *4];
+        this.segmentValue = new DefaultArea[inputDate.length *4];
         Arrays.fill(segmentValue,null);
         build(1,0, inputDate.length-1);
     }
@@ -62,7 +62,7 @@ public class BinarySegmentedTree {
             int arrMP = (arrLP + arrRP) / 2;
             build(nodeNum * 2, arrLP, arrMP);
             build(nodeNum * 2 + 1, arrMP + 1, arrRP);
-            segmentValue[nodeNum] = Area.sum(segmentValue[nodeNum * 2], segmentValue[nodeNum * 2 + 1]);
+            segmentValue[nodeNum] = DefaultArea.sum(segmentValue[nodeNum * 2], segmentValue[nodeNum * 2 + 1]);
         }
     }
 
@@ -76,15 +76,15 @@ public class BinarySegmentedTree {
         return segmentValue[index*2]!= null || segmentValue[index*2+1] != null;
     }
 
-    private Area findAreaWithBlockInside(int x, int y, int z, int segmentPos){
-        Area area = segmentValue[segmentPos];
+    private DefaultArea findAreaWithBlockInside(int x, int y, int z, int segmentPos){
+        DefaultArea area = segmentValue[segmentPos];
         if(area.isInside(x,y,z)){
             if(!hasChild(segmentPos)){
                 return area;
             }
-            Area a = findAreaWithBlockInside(x,y,z,segmentPos*2);
-            Area b = findAreaWithBlockInside(x,y,z,segmentPos*2+1);
-            return (Area) selectOneOfArgs(a,b);
+            DefaultArea a = findAreaWithBlockInside(x,y,z,segmentPos*2);
+            DefaultArea b = findAreaWithBlockInside(x,y,z,segmentPos*2+1);
+            return (DefaultArea) selectOneOfArgs(a,b);
         }
         return null;
     }

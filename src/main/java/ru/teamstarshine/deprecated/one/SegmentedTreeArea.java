@@ -1,4 +1,4 @@
-package ru.teamstarshine.one;
+package ru.teamstarshine.deprecated.one;
 //
 //public class SegmentedTreeArea {
 //    private boolean inited = false;
