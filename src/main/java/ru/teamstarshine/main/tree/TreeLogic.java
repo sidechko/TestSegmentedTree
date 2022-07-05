@@ -17,17 +17,42 @@ public class TreeLogic {
         coreNode = (STWayNode) lastLayer[0];
     }
 
-    //APPEND NEW AREA
     public void appendData(DefaultArea data) {
-        STAbstractNodeArea newData = new STAbstractNodeArea(data);
-        STWayNode notFull = coreNode.findNotFullChild();
+        STWayNode notFull = coreNode.findMostUnderNotFull();
         if (notFull == null) {
-            coreNode = new STWayNode(coreNode, newData);
+            STAbstractNodeArea lc = coreNode;
+            int counter = 0;
+            while (lc instanceof STWayNode) {
+                counter++;
+                lc = ((STWayNode) lc).getLeft();
+            }
+            lc = new STAbstractNodeArea(data);
+            for (int i = 0; i < counter; i++) {
+                lc = new STWayNode(lc, null);
+            }
+            coreNode = new STWayNode(coreNode, lc);
+            return;
+        }
+        int leftCounter = 0;
+        STAbstractNodeArea lc = coreNode;
+        while (lc instanceof STWayNode) {
+            leftCounter++;
+            lc = ((STWayNode) lc).getLeft();
+        }
+        int rightCounter = 0;
+        STWayNode rc = notFull;
+        while (rc != null) {
+            rightCounter++;
+            rc = rc.getParent();
+        }
+        if (leftCounter > rightCounter) {
+            STWayNode nodeToAdd = new STWayNode(new STAbstractNodeArea(data), null);
+            for (int i = 1; i < leftCounter - rightCounter; i++) {
+                nodeToAdd = new STWayNode(nodeToAdd, null);
+            }
+            notFull.setRightWithUpdate(nodeToAdd);
         } else {
-            STAbstractNodeArea nodeToMove = notFull.getRight();
-            if (nodeToMove != null)
-                notFull.setRightWithUpdate(new STWayNode(nodeToMove, null));
-            notFull.setRightWithUpdate(newData);
+            notFull.setRightWithUpdate(new STAbstractNodeArea(data));
         }
     }
 
@@ -61,9 +86,11 @@ public class TreeLogic {
         STAbstractNodeArea[] tmpSaveANA = new STAbstractNodeArea[infoAbouts.length];
         for (int i = 0; i < infoAbouts.length; i++) {
             tmpSaveANA[i] = infoAbouts[i].getNodeByInfo();
+            System.out.printf("\n%s %s\n", infoAbouts[i], tmpSaveANA[i]);
         }
-//        UtilMethods.quickSort(0,infoAbouts.length,tmpSaveANA);
-        UtilMethods.bubbleSort(tmpSaveANA);
+//        UtilMethods.bubbleSort(tmpSaveANA);
+//        UtilMethods.quickSort(tmpSaveANA);
+
         for (int i = 0; i < infoAbouts.length; i++) {
             infoAbouts[i].setValueAtSide(tmpSaveANA[i]);
         }
@@ -90,10 +117,19 @@ public class TreeLogic {
         if (!foundNode.isSide())
             parent.swapChild();
         parent.setRightWithUpdate(null);
+        if(parent.isChildless())
+            parent.leaveFromHome();
+
+        if(coreNode.getRight() == null){
+            if(coreNode.getLeft() instanceof STWayNode){
+                coreNode = (STWayNode) coreNode.getLeft();
+                coreNode.setGrand();
+            }
+            return true;
+        }
 
         STWayNode mostRightWayNode = coreNode.getMostRight();
-        if (mostRightWayNode == parent)
-            return true;
+
 
         if (mostRightWayNode.getRight() == null)
             mostRightWayNode.swapChild();
@@ -103,20 +139,6 @@ public class TreeLogic {
 
         return true;
     }
-
-//    private STWayNode getMostRight(){
-//        STWayNode node = coreNode;
-//        while (!node.isChildless() && (node.getRight() instanceof STWayNode || node.getLeft() instanceof STWayNode)){
-//            if(node.getRight() == null){
-//                if(node.getLeft() instanceof STWayNode)
-//                    node = (STWayNode) node.getLeft();
-//            }else if(node.getRight() instanceof STWayNode){
-//                node = (STWayNode) node.getRight();
-//            }
-//        }
-//        return node;
-//    }
-
     private STAreaNodeInfo findAreaByAreaStatsAtNode(DefaultArea area, STWayNode node, boolean needCheckEquals) {
         if (node.value.isInside(area)) {
             STAbstractNodeArea right = node.getRight();

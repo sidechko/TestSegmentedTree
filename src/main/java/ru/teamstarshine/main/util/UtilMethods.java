@@ -1,5 +1,6 @@
 package ru.teamstarshine.main.util;
 
+import ru.teamstarshine.main.area.DefaultArea;
 import ru.teamstarshine.main.tree.STAbstractNodeArea;
 
 public class UtilMethods {
@@ -9,47 +10,55 @@ public class UtilMethods {
         return o1;
     }
 
-    public static void quickSort(int low, int high, STAbstractNodeArea[] array){
-        System.out.printf("call quick sort %d %d", low, high);
-        if (array.length == 0)
-            return;
-        if (low >= high)
-            return;
-        int middle = low + (high - low) / 2;
-        STAbstractNodeArea basis = array[middle];
-        int i = low, j = high;
-        while (i <= j) {
-            while (basis.condition(array[i], true))
-                //>
-                i++;
-            while (basis.condition(array[i], false))
-                //<
-                j++;
-            if (i <= j) {
-                STAbstractNodeArea tmp = array[i];
-                array[i] = array[j];
-                array[j] = tmp;
-                i++;
-                j++;
-            }
-            if (low < j)
-                quickSort(low, j, array);
-            if (high > i)
-                quickSort(i, high, array);
-        }
-    }
+//    public static void quickSort(STAbstractNodeArea[] array) {
+//        quickSort(0, array.length - 1, array, array.length - 1, 0);
+//    }
 
-    public static void bubbleSort(STAbstractNodeArea[] area){
-        for (int i = 0; i < area.length; i++) {
-            for (int j = 0; j < area.length; j++) {
-                if(i==j)continue;
-                if(area[i].condition(area[j],true)){
-                    STAbstractNodeArea tmp = area[i];
-                    area[i] = area[j];
-                    area[j] = tmp;
-                    break;
-                }
-            }
+//    private static void quickSort(int low, int high, STAbstractNodeArea[] array,int lastLow, int lastHigh){
+//        if (array.length == 0)
+//            return;
+//        if(low == lastLow && high == lastHigh)
+//            return;
+//        if (low >= high)
+//            return;
+//        int middle = low + (high - low) / 2;
+//        STAbstractNodeArea basis = array[middle];
+//        int i = low, j = high;
+//        while (i <= j) {
+//            while (basis.condition(array[i]))
+//                i++;
+//            while (!basis.condition(array[j]))
+//                j--;
+//            if (i <= j) {
+//                STAbstractNodeArea tmp = array[i];
+//                array[i] = array[j];
+//                array[j] = tmp;
+//                i++;
+//                j--;
+//            }
+//            if (low < j)
+//                quickSort(low, j, array, low, high);
+//            if (high > i)
+//                quickSort(i, high, array, low, high);
+//        }
+//    }
+
+    public static void bubbleSort(STAbstractNodeArea[] area) {
+        int count = 0;
+        for (int i = 0; i < area.length - 1; i++) {
+            DefaultArea o1 = area[i].value;
+            DefaultArea o2 = area[i + 1].value;
+            if (!o1.condition(o2))
+                continue;
+            System.out.println("start");
+            STAbstractNodeArea tmp = area[i];
+            area[i] = area[i + 1];
+            area[i + 1] = tmp;
+            count++;
+
+        }
+        if (count > 0) {
+            bubbleSort(area);
         }
     }
 }

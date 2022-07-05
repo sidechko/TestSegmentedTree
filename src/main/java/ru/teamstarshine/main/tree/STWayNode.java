@@ -10,12 +10,10 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class STWayNode extends STAbstractNodeArea {
-    private static final Random RfPIDtL = new Random();
     private STWayNode parent;
     private STAbstractNodeArea left;
     private STAbstractNodeArea right;
     private boolean isFull = false;
-    private boolean mutate = false;
 
     //CONSTRUCTORS
     public STWayNode(STWayNode parent, STAbstractNodeArea left, STAbstractNodeArea right) {
@@ -89,44 +87,35 @@ public class STWayNode extends STAbstractNodeArea {
 
     private void updateThisValue() {
         value = sumInside();
+
         isFull = right != null && left != null;
-        if (right instanceof STWayNode)
-            isFull &= ((STWayNode) right).isFull;
-        if (left instanceof STWayNode)
-            isFull &= ((STWayNode) left).isFull;
-        mutate = right instanceof STWayNode ^ left instanceof STWayNode;
-        mutate |= right == null || left == null;
-        isFull &= !mutate;
+        if (right instanceof STWayNode) isFull &= ((STWayNode) right).isFull;
+        if (left instanceof STWayNode) isFull &= ((STWayNode) left).isFull;
     }
 
-    private DefaultArea sumInside(){
-        if(left == null && right == null)
+    public STWayNode findMostUnderNotFull(){
+        if(isFull)
             return null;
-        if(left == null)
+        boolean lisway = left instanceof STWayNode;
+        boolean risway = right instanceof STWayNode;
+        STWayNode leftValue = lisway ?  ((STWayNode) left).findMostUnderNotFull() : this;
+        STWayNode rightValue = risway ?  ((STWayNode) right).findMostUnderNotFull() : this;
+        return UtilMethods.selectOneOfArgs(leftValue, rightValue);
+
+    }
+
+    protected void setGrand(){
+        this.parent = null;
+    }
+
+    private DefaultArea sumInside() {
+        if (left == null && right == null)
+            return null;
+        if (left == null)
             return DefaultArea.sum(null, right.value);
-        if(right == null)
+        if (right == null)
             return DefaultArea.sum(left.value, null);
-        return DefaultArea.sum(left.value,right.value);
-    }
-
-    public STWayNode findNotFullChild() {
-        if (isFull)
-            return null;
-        if (mutate){
-            if(left instanceof STWayNode){
-                STWayNode toRet = ((STWayNode) left).findNotFullChild();
-                return toRet == null ? this: toRet;
-            }
-            else if (right instanceof STWayNode) {
-                STWayNode toRet = ((STWayNode) right).findNotFullChild();
-                return toRet == null ? this: toRet;
-            }
-            return this;
-        }
-        if (left instanceof STWayNode) {
-            return UtilMethods.selectOneOfArgs(((STWayNode) left).findNotFullChild(), ((STWayNode) right).findNotFullChild());
-        }
-        return this;
+        return DefaultArea.sum(left.value, right.value);
     }
 
     //SETTERS
@@ -167,54 +156,41 @@ public class STWayNode extends STAbstractNodeArea {
         return right;
     }
 
-    public boolean isFull() {
-        return isFull;
+    public boolean isChildless(){
+        return left==null&&right==null;
     }
-
-    public boolean isMutate() {
-        return mutate;
-    }
-
-    public boolean isChildless() {
-        return right == null && left == null;
-    }
-
-    public boolean hasAllChild() {
-        return right != null && left != null;
-    }
-
-    public List<DefaultArea> getAllAreas(List<DefaultArea> list){
-        if(left instanceof STWayNode)
+    public List<DefaultArea> getAllAreas(List<DefaultArea> list) {
+        if (left instanceof STWayNode)
             ((STWayNode) left).getAllAreas(list);
-        else
-            if(left != null)
-                list.add(left.value);
-        if(right instanceof STWayNode)
+        else if (left != null)
+            list.add(left.value);
+        if (right instanceof STWayNode)
             ((STWayNode) right).getAllAreas(list);
-        else
-            if(right != null)
-                list.add(right.value);
+        else if (right != null)
+            list.add(right.value);
         return list;
     }
 
-    protected STWayNode getMostRight(){
-        if(right instanceof STWayNode)
+    protected STWayNode getMostRight() {
+        if (right instanceof STWayNode)
             return ((STWayNode) right).getMostRight();
-        if(right == null)
-            if(left instanceof STWayNode)
+        if (right == null)
+            if (left instanceof STWayNode)
                 return ((STWayNode) left).getMostRight();
         return this;
     }
 
-    protected List<STAreaNodeInfo> getAllAbstractNodeInfo(List<STAreaNodeInfo> list){
-        if(left instanceof STWayNode)
+    protected List<STAreaNodeInfo> getAllAbstractNodeInfo(List<STAreaNodeInfo> list) {
+        if (left instanceof STWayNode)
             ((STWayNode) left).getAllAbstractNodeInfo(list);
         else
-            list.add(new STAreaNodeInfo(this,false));
-        if(right instanceof STWayNode)
+            if(left != null)
+                list.add(new STAreaNodeInfo(this, false));
+        if (right instanceof STWayNode)
             ((STWayNode) right).getAllAbstractNodeInfo(list);
         else
-            list.add(new STAreaNodeInfo(this, true));
+            if(right!=null)
+                list.add(new STAreaNodeInfo(this, true));
         return list;
     }
 
@@ -223,25 +199,25 @@ public class STWayNode extends STAbstractNodeArea {
         String leftStr = "";
         String rightStr = "";
 
-        if(left!=null)
+        if (left != null)
             leftStr = left.toString();
-        if(right!=null)
+        if (right != null)
             rightStr = right.toString();
 
         List<String> leftSplit = Arrays.asList(leftStr.split("\n"));
-        List<String> rightSplit =  Arrays.asList(rightStr.split("\n"));
+        List<String> rightSplit = Arrays.asList(rightStr.split("\n"));
         List<String> result = new ArrayList<>();
         int maxSize = 0;
-        for (int i = 0; i < Math.max(leftSplit.size(),rightSplit.size()); i++) {
+        for (int i = 0; i < Math.max(leftSplit.size(), rightSplit.size()); i++) {
             String lPatr = i >= leftSplit.size() ? " " : leftSplit.get(i);
             String rPatr = i >= rightSplit.size() ? " " : rightSplit.get(i);
-            result.add(lPatr+"  "+rPatr);
+            result.add(lPatr + "   " + rPatr);
             maxSize = Math.max(result.get(i).length(), maxSize);
         }
         int finalMaxSize = maxSize;
-        result = result.stream().map(str->{
-            while (str.length()< finalMaxSize)
-                str+=" ";
+        result = result.stream().map(str -> {
+            while (str.length() < finalMaxSize)
+                str += " ";
             return str;
         }).collect(Collectors.toList());
         StringBuilder toWN = new StringBuilder();
@@ -249,9 +225,9 @@ public class STWayNode extends STAbstractNodeArea {
             toWN.append(" ");
         }
         toWN.append('\n');
-        toWN.replace(maxSize/2-1,maxSize/2+1,"Wn");
-        result.forEach(str->toWN.append(str).append('\n'));
-        toWN.delete(toWN.length()-1,toWN.length());
+        toWN.replace(maxSize / 2 - 1, maxSize / 2 + 1, "Wn");
+        result.forEach(str -> toWN.append(str).append('\n'));
+        toWN.delete(toWN.length() - 1, toWN.length());
         return toWN.toString();
     }
 
