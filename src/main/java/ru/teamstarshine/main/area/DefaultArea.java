@@ -48,6 +48,13 @@ public class DefaultArea {
         return z > z1;
     }
 
+    public int getX1(){return pos1[0];}
+    public int getY1(){return pos1[1];}
+    public int getZ1(){return pos1[2];}
+    public int getX2(){return pos2[0];}
+    public int getY2(){return pos2[1];}
+    public int getZ2(){return pos2[2];}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

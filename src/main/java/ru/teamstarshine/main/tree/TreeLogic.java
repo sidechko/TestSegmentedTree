@@ -17,6 +17,10 @@ public class TreeLogic {
         coreNode = (STWayNode) lastLayer[0];
     }
 
+    public TreeLogic(){
+        coreNode = new STWayNode();
+    }
+
     public void appendData(DefaultArea data) {
         STWayNode notFull = coreNode.findMostUnderNotFull();
         if (notFull == null) {
@@ -73,6 +77,11 @@ public class TreeLogic {
     public STAreaNodeInfo[] findNodesOfCords(int x, int y, int z) {
         List<STAreaNodeInfo> list = new ArrayList<>();
         findAreaByAreaStatsAtNodes(new DefaultArea(x, y, z), coreNode, list);
+        return list.toArray(new STAreaNodeInfo[0]);
+    }
+    public STAreaNodeInfo[] findNodesOfCords(DefaultArea area) {
+        List<STAreaNodeInfo> list = new ArrayList<>();
+        findAreaByAreaStatsAtNodes(area, coreNode, list);
         return list.toArray(new STAreaNodeInfo[0]);
     }
 
@@ -185,16 +194,18 @@ public class TreeLogic {
             STAbstractNodeArea right = node.getRight();
             STAbstractNodeArea left = node.getLeft();
             if (!(right instanceof STWayNode)) {
-                if (right.value.isInside(area)) {
-                    list.add(new STAreaNodeInfo(node, true));
-                }
+                if(right!=null)
+                    if (right.value.isInside(area))
+                        list.add(new STAreaNodeInfo(node, true));
+
             } else {
                 findAreaByAreaStatsAtNodes(area, (STWayNode) right, list);
             }
             if (!(left instanceof STWayNode)) {
-                if (left.value.isInside(area)) {
-                    list.add(new STAreaNodeInfo(node, false));
-                }
+                if(left!=null)
+                    if (left.value.isInside(area))
+                        list.add(new STAreaNodeInfo(node, false));
+
             } else {
                 findAreaByAreaStatsAtNodes(area, (STWayNode) left, list);
             }
