@@ -21,7 +21,7 @@ public class MainTwoForkOne {
     }
 
     public static void speedTest1(){
-        int size = 1048576;
+        int size = 1048576; //2^20
         boolean needPrintAreas = false;
         DefaultArea areas[] = new DefaultArea[size];
         for (int i = 0; i < size; i++) {
@@ -36,33 +36,51 @@ public class MainTwoForkOne {
         TreeLogic treeLogic = new TreeLogic(areas);
         System.out.println();
 
-        System.out.println("query by cord start time  "+System.currentTimeMillis());
+        long startTime = 0;
+        long finishTime = 0;
+
+        startTime = System.currentTimeMillis();
+        System.out.println("query by cord start time  "+startTime);
         STAreaNodeInfo info = treeLogic.findAreaByCord(x,y,z);
-        System.out.println("query by cord finish time "+System.currentTimeMillis());
+        finishTime = System.currentTimeMillis();
+        System.out.println("query by cord finish time "+finishTime);
+        System.out.println("delta(ms) = "+(finishTime-startTime));
         System.out.println("is equals "+info.getNodeByInfo().value.equals(valueToFind));
         System.out.println();
 
-        System.out.println("query by cord areas start time  "+System.currentTimeMillis());
+        startTime = System.currentTimeMillis();
+        System.out.println("query by cord areas start time  "+startTime);
         STAreaNodeInfo[] info1 = treeLogic.findNodesOfCords(x,y,z);
-        System.out.println("query bu cord areas finish time "+System.currentTimeMillis()+"\n");
+        finishTime = System.currentTimeMillis();
+        System.out.println("query bu cord areas finish time "+finishTime+"\n");
+        System.out.println("delta(ms) = "+(finishTime-startTime));
         if(needPrintAreas) Arrays.stream(info1).forEach(i-> System.out.print(i.getNodeByInfo().value+" "));
         System.out.println();
 
-        System.out.println("query by area start time  "+System.currentTimeMillis());
+        startTime = System.currentTimeMillis();
+        System.out.println("query by area start time  "+startTime);
         STAreaNodeInfo info2 = treeLogic.findNodeOfArea(valueToFind);
-        System.out.println("query by area finish time "+System.currentTimeMillis());
+        finishTime = System.currentTimeMillis();
+        System.out.println("query by area finish time "+finishTime);
+        System.out.println("delta(ms) = "+(finishTime-startTime));
         System.out.println("is equals "+info2.getNodeByInfo().value.equals(valueToFind));
         System.out.println();
 
-        System.out.println("query by area with check start time  "+System.currentTimeMillis());
+        startTime = System.currentTimeMillis();
+        System.out.println("query by area with check start time  "+startTime);
         STAreaNodeInfo info3 = treeLogic.findNodeOfArea(valueToFind,true);
-        System.out.println("query by area with check finish time "+System.currentTimeMillis());
+        finishTime = System.currentTimeMillis();
+        System.out.println("query by area with check finish time "+finishTime);
         if(needPrintAreas) System.out.println("is equals "+info3.getNodeByInfo().value.equals(valueToFind));
+        System.out.println("delta(ms) = "+(finishTime-startTime));
         System.out.println();
 
-        System.out.println("query by area areas start time  "+System.currentTimeMillis());
+        startTime = System.currentTimeMillis();
+        System.out.println("query by area areas start time  "+startTime);
         STAreaNodeInfo[] info4 = treeLogic.findNodesOfCords(x,y,z);
-        System.out.println("query bu area areas finish time "+System.currentTimeMillis()+"\n");
+        finishTime = System.currentTimeMillis();
+        System.out.println("query bu area areas finish time "+finishTime+"\n");
+        System.out.println("delta(ms) = "+(finishTime-startTime));
         if(needPrintAreas) Arrays.stream(info4).forEach(i-> System.out.print(i.getNodeByInfo().value+" "));
         System.out.println();
     }
